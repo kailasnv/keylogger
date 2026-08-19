@@ -14,7 +14,7 @@
 *.a
 *.lib
 *.dSYM/   
-
+logger
 
 # Build directories
 build/
