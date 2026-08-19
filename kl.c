@@ -154,14 +154,19 @@ printf("length of events in array: %d\n", event_count);
       fflush(stdout);
 
       // write keys to the file
-      write(logs_fd, theKey, strlen(theKey));
+      ssize_t write_bytes = write(logs_fd, theKey, strlen(theKey));
+      if (write_bytes < 0) {
+        perror("write");
+        return 1;
+      }
     }
   }
 
-  // close(fds);
+  // close all file descriptors
   for (int i = 0; i < event_count; i++) {
     close(fds[i].fd);
   }
+  close(logs_fd);
 
   return 0;
 }
